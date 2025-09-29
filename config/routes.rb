@@ -1,3 +1,8 @@
 Rails.application.routes.draw do
-  get :health, to: 'health#show'
+  devise_for :users,
+             defaults: { format: :json },
+             controllers: {
+               registrations: "users/registrations",
+               sessions: "users/sessions"
+             }
 end

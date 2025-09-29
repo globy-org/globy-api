@@ -46,3 +46,7 @@ group :development do
 end
 
 gem "bcrypt", "~> 3.1"
+
+gem "devise", "~> 4.9"
+gem "devise-jwt", "~> 0.12.1"
+gem "rack-cors", require: "rack/cors"

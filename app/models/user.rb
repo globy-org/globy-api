@@ -1,16 +1,17 @@
 class User < ApplicationRecord
-  has_secure_password  # ← bcrypt + password_digest で動作
+  # has_secure_password は除去
+  # include Devise modules you need:
+  # :confirmable, :lockable, :timeoutable, :trackable は必要に応じて
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable,
+         :jwt_authenticatable, jwt_revocation_strategy: self
 
-  # email を小文字正規化
+  # JWT のための JTI（トークン識別子）を使う
+  include Devise::JWT::RevocationStrategies::JTIMatcher
+
   before_validation :downcase_email
 
-  validates :name,  presence: true, length: { maximum: 50 }
-  validates :email,
-            presence: true,
-            length: { maximum: 255 },
-            format: { with: /\A[^@\s]+@[^@\s]+\z/ },
-            uniqueness: { case_sensitive: false }
-  validates :password, length: { minimum: 8 }, if: :password_digest_changed?
+  validates :name, presence: true, length: { maximum: 50 }
 
   private
 
