@@ -5,16 +5,37 @@ class Users::SessionsController < Devise::SessionsController
   def create
     self.resource = warden.authenticate!(auth_options)
     sign_in(resource_name, resource)
-    render json: { user: serialize_user(resource) }, status: :ok
+
+    # devise-jwt が発行したトークンは env に入る
+    token = request.env['warden-jwt_auth.token']
+
+    render json: {
+      user: resource.slice(:id, :email, :name),
+      token: token
+      # 必要なら exp を返す場合はコメントアウトを外して使う（下に参考コードあり）
+      # exp: jwt_exp(token)
+    }, status: :ok
   end
 
   # DELETE /users/sign_out
   def destroy
     sign_out(resource_name)
-    head :no_content
+    render json: { ok: true }, status: :ok
   end
 
   private
+
+  def respond_with(resource, _opts = {})
+    token = request.env['warden-jwt_auth.token']
+    render json: {
+      user: {
+        id: resource.id,
+        email: resource.email,
+        name: resource.name
+      },
+      token: token
+    }, status: :ok
+  end
 
   def respond_with(resource, _opts = {})
     render json: { user: serialize_user(resource) }, status: :ok

@@ -311,22 +311,22 @@ Devise.setup do |config|
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
   # Rails の secret_key_base を利用
-  config.jwt do |jwt|
-    jwt.secret = Rails.application.secret_key_base
-    # ログイン・ログアウトでトークン発行/無効化するエンドポイントを宣言
-    jwt.dispatch_requests = [
-      ['POST', %r{^/auth/sign_in$}],
-      ['POST', %r{^/auth/sign_up$}]
-    ]
-    jwt.revocation_requests = [
-      ['DELETE', %r{^/auth/sign_out$}]
-    ]
-    jwt.expiration_time = 1.day.to_i
-    jwt.request_formats = {
-      user: [:json] # APIモードで JSON を想定
-    }
-  end
+
 
   # APIサーバなので navigational formats を空に（HTML redirect を防ぐ）
   config.navigational_formats = []
+  # JWT の設定
+  config.jwt do |jwt|
+    jwt.secret = Rails.application.secret_key_base
+    # ここを /users に合わせる
+    jwt.dispatch_requests = [
+      ['POST', %r{^/users/sign_in$}],
+      ['POST', %r{^/users$}]          # Deviseのsign_upは POST /users
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/users/sign_out$}]
+    ]
+    jwt.expiration_time = 1.day.to_i
+    jwt.request_formats = { user: [:json] }
+  end
 end
