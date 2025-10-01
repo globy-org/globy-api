@@ -1,5 +1,6 @@
 class Users::SessionsController < Devise::SessionsController
   respond_to :json
+  before_action :authenticate_user!, only: [:me]
 
   # POST /users/sign_in
   def create
@@ -15,6 +16,16 @@ class Users::SessionsController < Devise::SessionsController
       # 必要なら exp を返す場合はコメントアウトを外して使う（下に参考コードあり）
       # exp: jwt_exp(token)
     }, status: :ok
+  end
+
+  def me
+    if current_user
+      render json: {
+        user: { id: current_user.id, name: current_user.name, email: current_user.email }
+      }, status: :ok
+    else
+      render json: { error: 'Unauthorized' }, status: :unauthorized
+    end
   end
 
   # DELETE /users/sign_out

@@ -7,6 +7,10 @@ Rails.application.routes.draw do
     sessions: 'users/sessions'
   }
 
+  devise_scope :user do
+    get '/me', to: 'users/sessions#me'
+  end
+
   namespace :api do
     namespace :v1 do
       # 例: 現在ユーザー用エンドポイントをこのあと実装予定
