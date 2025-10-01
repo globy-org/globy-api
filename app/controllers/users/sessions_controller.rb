@@ -7,14 +7,15 @@ class Users::SessionsController < Devise::SessionsController
     self.resource = warden.authenticate!(auth_options)
     sign_in(resource_name, resource)
 
-    # devise-jwt が発行したトークンは env に入る
     token = request.env['warden-jwt_auth.token']
 
     render json: {
-      user: resource.slice(:id, :email, :name),
+      user: {
+        id: resource.id,
+        name: resource.name,
+        email: resource.email
+      },
       token: token
-      # 必要なら exp を返す場合はコメントアウトを外して使う（下に参考コードあり）
-      # exp: jwt_exp(token)
     }, status: :ok
   end
 
