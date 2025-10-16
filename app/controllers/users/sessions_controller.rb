@@ -50,8 +50,17 @@ class Users::SessionsController < Devise::SessionsController
 
   # GET /me
   def me
-    # authenticate_user! 済みのため current_user は存在する想定
-    render json: { user: serialize_user(current_user) }, status: :ok
+    user = current_user || (defined?(warden) ? warden.user(scope: resource_name) : nil)
+    unless user
+      return render_problem(
+        status: 401,
+        code:   "unauthorized",
+        title:  "Unauthorized",
+        detail: "User is not signed in"
+      )
+    end
+
+    render json: { user: serialize_user(user) }, status: :ok
   end
 
   # DELETE /users/sign_out
