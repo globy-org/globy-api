@@ -31,3 +31,13 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+# local artifacts
+before.jar
+*.jar
+headers.txt
+jar.txt
+
+# credentials & local env (念のため)
+.env
+.env.*
+config/credentials/*.key
